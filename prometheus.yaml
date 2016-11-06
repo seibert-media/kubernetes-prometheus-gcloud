@@ -7,15 +7,6 @@
 
 # Scrape config for API servers.
 scrape_configs:
-# etcd is living outside of our cluster and we configure
-# it directly.
-- job_name: 'etcd'
-  target_groups:
-  - targets:
-    - 172.16.11.12:2379
-    - 172.16.11.13:2379
-    - 172.16.11.14:2379
-
 - job_name: 'kubernetes-apiservers'
 
   # Default to scraping over https. If required, just disable this or change to
@@ -181,3 +172,15 @@ scrape_configs:
   - source_labels: [__meta_kubernetes_pod_name]
     action: replace
     target_label: kubernetes_pod_name
+
+
+
+# etcd is living outside of our cluster and we configure
+# it directly.
+#- job_name: 'etcd'
+#  target_groups:
+#  - targets:
+#    - 172.16.11.12:2379
+#    - 172.16.11.13:2379
+#    - 172.16.11.14:2379
+#
