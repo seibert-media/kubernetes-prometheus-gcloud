@@ -25,7 +25,7 @@ scrape_configs:
     # so this should only be disabled in a controlled environment. You can
     # disable certificate verification by uncommenting the line below.
     #
-    # insecure_skip_verify: true
+    insecure_skip_verify: true
   bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 
   # Keep only the default/kubernetes service endpoints for the https port. This
@@ -54,7 +54,7 @@ scrape_configs:
     # so this should only be disabled in a controlled environment. You can
     # disable certificate verification by uncommenting the line below.
     #
-    # insecure_skip_verify: true
+    insecure_skip_verify: true
   bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
 
   kubernetes_sd_configs:
@@ -172,67 +172,3 @@ scrape_configs:
   - source_labels: [__meta_kubernetes_pod_name]
     action: replace
     target_label: kubernetes_pod_name
-
-
-
-# etcd is living outside of our cluster and we configure
-# it directly.
-#- job_name: 'etcd'
-#  target_groups:
-#  - targets:
-#    - 172.16.11.12:2379
-#    - 172.16.11.13:2379
-#    - 172.16.11.14:2379
-#
-
-
-
-- job_name: kubernetes-nodes-cadvisor
-  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-  kubernetes_sd_configs:
-  - api_servers:
-    - https://kubernetes.default.svc
-    in_cluster: true
-    role: node
-  metric_relabel_configs:
-  - action: replace
-    regex: ^/machine\.slice/machine-rkt\\x2d([^\\]+)\\.+/([^/]+)\.service$
-    replacement: ${2}-${1}
-    source_labels:
-    - id
-    target_label: rkt_container_name
-  - action: replace
-    regex: ^/system\.slice/(.+)\.service$
-    replacement: ${1}
-    source_labels:
-    - id
-    target_label: systemd_service_name
-  relabel_configs:
-  - action: labelmap
-    regex: __meta_kubernetes_node_label_(.+)
-  - action: replace
-    source_labels:
-    - __meta_kubernetes_role
-    target_label: kubernetes_role
-  scheme: https
-  tls_config:
-    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-
-
-- job_name: kubernetes-apiserver-cadvisor
-  kubernetes_sd_configs:
-  - api_servers:
-    - https://kubernetes.default.svc
-    in_cluster: true
-    role: apiserver
-  relabel_configs:
-  - action: labelmap
-    regex: __meta_kubernetes_node_label_(.+)
-  - action: replace
-    source_labels:
-    - __meta_kubernetes_role
-    target_label: kubernetes_role
-  scheme: https
-  tls_config:
-    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
