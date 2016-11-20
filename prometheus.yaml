@@ -1,3 +1,23 @@
+global:
+  # How frequently to scrape targets by default.
+  scrape_interval: 1m
+
+  # How long until a scrape request times out.
+  scrape_timeout: 10s
+
+  # How frequently to evaluate rules.
+  evaluation_interval: 1m
+
+  # The labels to add to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: 'default'
+
+# Rule files specifies a list of globs. Rules and alerts are read from
+# all matching files.
+rule_files:
+- 'alert.rules'
+
 # A scrape configuration for running Prometheus on a Kubernetes cluster.
 # This uses separate scrape configs for cluster components (i.e. API server, node)
 # and services to allow each to use different authentication configs.
