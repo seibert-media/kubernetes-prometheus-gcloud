@@ -11,7 +11,7 @@ global:
   # The labels to add to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
-    monitor: 'default'
+    region: 'sm'
 
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
