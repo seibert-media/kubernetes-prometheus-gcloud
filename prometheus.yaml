@@ -60,7 +60,21 @@ scrape_configs:
 
   # Default to scraping over https. If required, just disable this or change to
   # `http`.
-  scheme: http
+  scheme: https
+
+  relabel_configs:
+  - action: labelmap
+    regex: __meta_kubernetes_node_label_(.+)
+  - source_labels: [__address__]
+    action: replace
+    target_label: __address__
+    regex: ([^:;]+):(\d+)
+    replacement: ${1}:10255
+  - source_labels: [__scheme__]
+    action: replace
+    target_label: __scheme__
+    regex: https
+    replacement: http
 
   # This TLS & bearer token file config is used to connect to the actual scrape
   # endpoints for cluster components. This is separate to discovery auth
