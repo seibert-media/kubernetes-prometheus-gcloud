@@ -1,6 +1,8 @@
 global:
+  resolve_timeout: 1m
   smtp_smarthost: 'int.postfix.smedia.fra-1.smhss.de:25'
   smtp_from: 'alertmanager@seibert-media.net'
+  smtp_require_tls: false
 
 # The directory from which notification templates are read.
 templates:
