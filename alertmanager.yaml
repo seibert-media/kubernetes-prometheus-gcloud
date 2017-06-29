@@ -134,7 +134,7 @@ route:
   routes:
   - match_re:
       service:
-        regexp: {}
+        regexp: '{}'
     receiver: team-X-mails
     routes:
     - match:
