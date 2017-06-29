@@ -1,141 +1,56 @@
 global:
-  hipchat_auth_token: <secret>
-  hipchat_url: https://hipchat.foobar.org/
-  opsgenie_api_host: https://api.opsgenie.com/
-  pagerduty_url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-  resolve_timeout: 5m
-  slack_api_url: null
-  smtp_auth_identity: ""
-  smtp_auth_password: <secret>
-  smtp_auth_secret: null
-  smtp_auth_username: alertmanager
-  smtp_from: alertmanager@example.org
-  smtp_require_tls: true
-  smtp_smarthost: localhost:25
-  victorops_api_url: https://alert.victorops.com/integrations/generic/20131114/alert/
-inhibit_rules:
-- equal:
-  - alertname
-  - cluster
-  - service
-  source_match:
-    severity: critical
-  source_match_re: {}
-  target_match:
-    severity: warning
-  target_match_re: {}
-receivers:
-- email_configs:
-  - auth_identity: ""
-    auth_password: <secret>
-    auth_secret: null
-    auth_username: alertmanager
-    from: alertmanager@example.org
-    headers:
-      From: alertmanager@example.org
-      Subject: '{{ template "email.default.subject" . }}'
-      To: team-X+alerts@example.org
-    html: '{{ template "email.default.html" . }}'
-    require_tls: true
-    send_resolved: false
-    smarthost: localhost:25
-    to: team-X+alerts@example.org
-  name: team-X-mails
-- email_configs:
-  - auth_identity: ""
-    auth_password: <secret>
-    auth_secret: null
-    auth_username: alertmanager
-    from: alertmanager@example.org
-    headers:
-      From: alertmanager@example.org
-      Subject: '{{ template "email.default.subject" . }}'
-      To: team-X+alerts-critical@example.org
-    html: '{{ template "email.default.html" . }}'
-    require_tls: true
-    send_resolved: false
-    smarthost: localhost:25
-    to: team-X+alerts-critical@example.org
-  name: team-X-pager
-  pagerduty_configs:
-  - client: '{{ template "pagerduty.default.client" . }}'
-    client_url: '{{ template "pagerduty.default.clientURL" . }}'
-    description: '{{ template "pagerduty.default.description" .}}'
-    details:
-      firing: '{{ template "pagerduty.default.instances" .Alerts.Firing }}'
-      num_firing: '{{ .Alerts.Firing | len }}'
-      num_resolved: '{{ .Alerts.Resolved | len }}'
-      resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
-    send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-- email_configs:
-  - auth_identity: ""
-    auth_password: <secret>
-    auth_secret: null
-    auth_username: alertmanager
-    from: alertmanager@example.org
-    headers:
-      From: alertmanager@example.org
-      Subject: '{{ template "email.default.subject" . }}'
-      To: team-Y+alerts@example.org
-    html: '{{ template "email.default.html" . }}'
-    require_tls: true
-    send_resolved: false
-    smarthost: localhost:25
-    to: team-Y+alerts@example.org
-  name: team-Y-mails
-- name: team-Y-pager
-  pagerduty_configs:
-  - client: '{{ template "pagerduty.default.client" . }}'
-    client_url: '{{ template "pagerduty.default.clientURL" . }}'
-    description: '{{ template "pagerduty.default.description" .}}'
-    details:
-      firing: '{{ template "pagerduty.default.instances" .Alerts.Firing }}'
-      num_firing: '{{ .Alerts.Firing | len }}'
-      num_resolved: '{{ .Alerts.Resolved | len }}'
-      resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
-    send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-- name: team-DB-pager
-  pagerduty_configs:
-  - client: '{{ template "pagerduty.default.client" . }}'
-    client_url: '{{ template "pagerduty.default.clientURL" . }}'
-    description: '{{ template "pagerduty.default.description" .}}'
-    details:
-      firing: '{{ template "pagerduty.default.instances" .Alerts.Firing }}'
-      num_firing: '{{ .Alerts.Firing | len }}'
-      num_resolved: '{{ .Alerts.Resolved | len }}'
-      resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
-    send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-- hipchat_configs:
-  - api_url: https://hipchat.foobar.org/
-    auth_token: <secret>
-    color: '{{ if eq .Status "firing" }}red{{ else }}green{{ end }}'
-    from: '{{ template "hipchat.default.from" . }}'
-    message: '{{ template "hipchat.default.message" . }}'
-    message_format: html
-    notify: true
-    room_id: "85"
-    send_resolved: false
-  name: team-X-hipchat
+  # The smarthost and SMTP sender used for mail notifications.
+  smtp_smarthost: 'localhost:25'
+  smtp_from: 'alertmanager@example.org'
+  smtp_auth_username: 'alertmanager'
+  smtp_auth_password: 'password'
+  # The auth token for Hipchat.
+  hipchat_auth_token: '1234556789'
+  # Alternative host for Hipchat.
+  hipchat_url: 'https://hipchat.foobar.org/'
+
+# The directory from which notification templates are read.
+templates:
+- '/etc/alertmanager/template/*.tmpl'
+
+# The root route on which each incoming alert enters.
 route:
-  group_by:
-  - alertname
-  - cluster
-  - service
-  group_interval: 5m
+  # The labels by which incoming alerts are grouped together. For example,
+  # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
+  # be batched into a single group.
+  group_by: ['alertname', 'cluster', 'service']
+
+  # When a new group of alerts is created by an incoming alert, wait at
+  # least 'group_wait' to send the initial notification.
+  # This way ensures that you get multiple alerts for the same group that start
+  # firing shortly after another are batched together on the first
+  # notification.
   group_wait: 30s
-  receiver: team-X-mails
+
+  # When the first notification was sent, wait 'group_interval' to send a batch
+  # of new alerts that started firing for that group.
+  group_interval: 5m
+
+  # If an alert has successfully been sent, wait 'repeat_interval' to
+  # resend them.
   repeat_interval: 3h
+
+  # A default receiver
+  receiver: team-X-mails
+
+  # All the above attributes are inherited by all child routes and can
+  # overwritten on each.
+
+  # The child route trees.
   routes:
+  # This routes performs a regular expression match on alert labels to
+  # catch alerts that are related to a list of services.
   - match_re:
-      service:
-        regexp: '{}'
+      service: ^(foo1|foo2|baz)$
     receiver: team-X-mails
+    # The service has a sub-route for critical alerts, any alerts
+    # that do not match, i.e. severity != critical, fall-back to the
+    # parent node and are sent to 'team-X-mails'
     routes:
     - match:
         severity: critical
@@ -143,17 +58,19 @@ route:
   - match:
       service: files
     receiver: team-Y-mails
+
     routes:
     - match:
         severity: critical
       receiver: team-Y-pager
-  - group_by:
-    - alertname
-    - cluster
-    - database
-    match:
+
+  # This route handles all alerts coming from a database service. If there's
+  # no team to handle it, it defaults to the DB team.
+  - match:
       service: database
     receiver: team-DB-pager
+    # Also group alerts by affected database.
+    group_by: [alertname, cluster, database]
     routes:
     - match:
         owner: team-X
@@ -161,6 +78,46 @@ route:
     - match:
         owner: team-Y
       receiver: team-Y-pager
-templates:
-- /etc/alertmanager/template/*.tmpl
 
+
+# Inhibition rules allow to mute a set of alerts given that another alert is
+# firing.
+# We use this to mute any warning-level notifications if the same alert is
+# already critical.
+inhibit_rules:
+- source_match:
+    severity: 'critical'
+  target_match:
+    severity: 'warning'
+  # Apply inhibition if the alertname is the same.
+  equal: ['alertname', 'cluster', 'service']
+
+
+receivers:
+- name: 'team-X-mails'
+  email_configs:
+  - to: 'team-X+alerts@example.org'
+
+- name: 'team-X-pager'
+  email_configs:
+  - to: 'team-X+alerts-critical@example.org'
+  pagerduty_configs:
+  - service_key: <team-X-key>
+
+- name: 'team-Y-mails'
+  email_configs:
+  - to: 'team-Y+alerts@example.org'
+
+- name: 'team-Y-pager'
+  pagerduty_configs:
+  - service_key: <team-Y-key>
+
+- name: 'team-DB-pager'
+  pagerduty_configs:
+  - service_key: <team-DB-key>
+- name: 'team-X-hipchat'
+  hipchat_configs:
+  - auth_token: <auth_token>
+    room_id: 85
+    message_format: html
+    notify: true
