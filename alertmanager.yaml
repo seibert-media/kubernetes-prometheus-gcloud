@@ -1,106 +1,64 @@
 global:
+  hipchat_auth_token: <secret>
+  hipchat_url: https://hipchat.foobar.org/
+  opsgenie_api_host: https://api.opsgenie.com/
+  pagerduty_url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
   resolve_timeout: 5m
-  smtp_from: alertmanager@example.org
-  smtp_smarthost: localhost:25
-  smtp_auth_username: alertmanager
+  slack_api_url: null
+  smtp_auth_identity: ""
   smtp_auth_password: <secret>
   smtp_auth_secret: null
-  smtp_auth_identity: ""
+  smtp_auth_username: alertmanager
+  smtp_from: alertmanager@example.org
   smtp_require_tls: true
-  slack_api_url: null
-  pagerduty_url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-  hipchat_url: https://hipchat.foobar.org/
-  hipchat_auth_token: <secret>
-  opsgenie_api_host: https://api.opsgenie.com/
+  smtp_smarthost: localhost:25
   victorops_api_url: https://alert.victorops.com/integrations/generic/20131114/alert/
-route:
-  receiver: team-X-mails
-  group_by:
+inhibit_rules:
+- equal:
   - alertname
   - cluster
   - service
-  routes:
-  - receiver: team-X-mails
-    match_re:
-      service:
-        regexp: {}
-    routes:
-    - receiver: team-X-pager
-      match:
-        severity: critical
-  - receiver: team-Y-mails
-    match:
-      service: files
-    routes:
-    - receiver: team-Y-pager
-      match:
-        severity: critical
-  - receiver: team-DB-pager
-    group_by:
-    - alertname
-    - cluster
-    - database
-    match:
-      service: database
-    routes:
-    - receiver: team-X-pager
-      match:
-        owner: team-X
-    - receiver: team-Y-pager
-      match:
-        owner: team-Y
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 3h
-inhibit_rules:
-- source_match:
+  source_match:
     severity: critical
   source_match_re: {}
   target_match:
     severity: warning
   target_match_re: {}
-  equal:
-  - alertname
-  - cluster
-  - service
 receivers:
-- name: team-X-mails
-  email_configs:
-  - send_resolved: false
-    to: team-X+alerts@example.org
-    from: alertmanager@example.org
-    smarthost: localhost:25
-    auth_username: alertmanager
+- email_configs:
+  - auth_identity: ""
     auth_password: <secret>
     auth_secret: null
-    auth_identity: ""
+    auth_username: alertmanager
+    from: alertmanager@example.org
     headers:
       From: alertmanager@example.org
       Subject: '{{ template "email.default.subject" . }}'
       To: team-X+alerts@example.org
     html: '{{ template "email.default.html" . }}'
     require_tls: true
-- name: team-X-pager
-  email_configs:
-  - send_resolved: false
-    to: team-X+alerts-critical@example.org
-    from: alertmanager@example.org
+    send_resolved: false
     smarthost: localhost:25
-    auth_username: alertmanager
+    to: team-X+alerts@example.org
+  name: team-X-mails
+- email_configs:
+  - auth_identity: ""
     auth_password: <secret>
     auth_secret: null
-    auth_identity: ""
+    auth_username: alertmanager
+    from: alertmanager@example.org
     headers:
       From: alertmanager@example.org
       Subject: '{{ template "email.default.subject" . }}'
       To: team-X+alerts-critical@example.org
     html: '{{ template "email.default.html" . }}'
     require_tls: true
+    send_resolved: false
+    smarthost: localhost:25
+    to: team-X+alerts-critical@example.org
+  name: team-X-pager
   pagerduty_configs:
-  - send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-    client: '{{ template "pagerduty.default.client" . }}'
+  - client: '{{ template "pagerduty.default.client" . }}'
     client_url: '{{ template "pagerduty.default.clientURL" . }}'
     description: '{{ template "pagerduty.default.description" .}}'
     details:
@@ -108,28 +66,28 @@ receivers:
       num_firing: '{{ .Alerts.Firing | len }}'
       num_resolved: '{{ .Alerts.Resolved | len }}'
       resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
-- name: team-Y-mails
-  email_configs:
-  - send_resolved: false
-    to: team-Y+alerts@example.org
-    from: alertmanager@example.org
-    smarthost: localhost:25
-    auth_username: alertmanager
+    send_resolved: true
+    service_key: <secret>
+    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
+- email_configs:
+  - auth_identity: ""
     auth_password: <secret>
     auth_secret: null
-    auth_identity: ""
+    auth_username: alertmanager
+    from: alertmanager@example.org
     headers:
       From: alertmanager@example.org
       Subject: '{{ template "email.default.subject" . }}'
       To: team-Y+alerts@example.org
     html: '{{ template "email.default.html" . }}'
     require_tls: true
+    send_resolved: false
+    smarthost: localhost:25
+    to: team-Y+alerts@example.org
+  name: team-Y-mails
 - name: team-Y-pager
   pagerduty_configs:
-  - send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-    client: '{{ template "pagerduty.default.client" . }}'
+  - client: '{{ template "pagerduty.default.client" . }}'
     client_url: '{{ template "pagerduty.default.clientURL" . }}'
     description: '{{ template "pagerduty.default.description" .}}'
     details:
@@ -137,12 +95,12 @@ receivers:
       num_firing: '{{ .Alerts.Firing | len }}'
       num_resolved: '{{ .Alerts.Resolved | len }}'
       resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
+    send_resolved: true
+    service_key: <secret>
+    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
 - name: team-DB-pager
   pagerduty_configs:
-  - send_resolved: true
-    service_key: <secret>
-    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
-    client: '{{ template "pagerduty.default.client" . }}'
+  - client: '{{ template "pagerduty.default.client" . }}'
     client_url: '{{ template "pagerduty.default.clientURL" . }}'
     description: '{{ template "pagerduty.default.description" .}}'
     details:
@@ -150,16 +108,59 @@ receivers:
       num_firing: '{{ .Alerts.Firing | len }}'
       num_resolved: '{{ .Alerts.Resolved | len }}'
       resolved: '{{ template "pagerduty.default.instances" .Alerts.Resolved }}'
-- name: team-X-hipchat
-  hipchat_configs:
-  - send_resolved: false
-    api_url: https://hipchat.foobar.org/
+    send_resolved: true
+    service_key: <secret>
+    url: https://events.pagerduty.com/generic/2010-04-15/create_event.json
+- hipchat_configs:
+  - api_url: https://hipchat.foobar.org/
     auth_token: <secret>
-    room_id: "85"
+    color: '{{ if eq .Status "firing" }}red{{ else }}green{{ end }}'
     from: '{{ template "hipchat.default.from" . }}'
-    notify: true
     message: '{{ template "hipchat.default.message" . }}'
     message_format: html
-    color: '{{ if eq .Status "firing" }}red{{ else }}green{{ end }}'
+    notify: true
+    room_id: "85"
+    send_resolved: false
+  name: team-X-hipchat
+route:
+  group_by:
+  - alertname
+  - cluster
+  - service
+  group_interval: 5m
+  group_wait: 30s
+  receiver: team-X-mails
+  repeat_interval: 3h
+  routes:
+  - match_re:
+      service:
+        regexp: {}
+    receiver: team-X-mails
+    routes:
+    - match:
+        severity: critical
+      receiver: team-X-pager
+  - match:
+      service: files
+    receiver: team-Y-mails
+    routes:
+    - match:
+        severity: critical
+      receiver: team-Y-pager
+  - group_by:
+    - alertname
+    - cluster
+    - database
+    match:
+      service: database
+    receiver: team-DB-pager
+    routes:
+    - match:
+        owner: team-X
+      receiver: team-X-pager
+    - match:
+        owner: team-Y
+      receiver: team-Y-pager
 templates:
 - /etc/alertmanager/template/*.tmpl
+
