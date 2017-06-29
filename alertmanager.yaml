@@ -47,4 +47,4 @@ inhibit_rules:
 receivers:
 - name: 'team-inf'
   email_configs:
-  - to: 'bbborbe@seibert-media.net'
+  - to: 'bborbe@seibert-media.net'
