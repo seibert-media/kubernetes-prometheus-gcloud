@@ -1,4 +1,4 @@
-# Test alertmanager cofnig:
+# Test alertmanager config:
 	
 ```
 go get -u github.com/prometheus/alertmanager/cmd/alertmanager
