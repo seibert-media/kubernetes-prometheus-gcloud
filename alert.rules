@@ -13,8 +13,9 @@ ALERT DiskOutOfSpace
   BY (app)) < 0.2
   FOR 1m
   LABELS {severity="warning"}
-    summary="Disk of {{ $labels.app }} space"
-    ANNOTATIONS {description="{{ $labels.app }} is below 20% free space for more than 1 minutes.", 
+  ANNOTATIONS {
+    summary="Disk of {{ $labels.app }} space",
+    description="{{ $labels.app }} is below 20% free space for more than 1 minutes.", 
   }
 
 ALERT DiskOutOfSpace
@@ -22,8 +23,9 @@ ALERT DiskOutOfSpace
   (app)) < 0.1
   FOR 1m
   LABELS {severity="critical"}
-    summary="Disk of {{ $labels.app }} space"
-    ANNOTATIONS {description="{{ $labels.app }} is below 10% free space for more than 1 minutes.", 
+  ANNOTATIONS {
+    summary="Disk of {{ $labels.app }} space",
+    description="{{ $labels.app }} is below 10% free space for more than 1 minutes.", 
   }
 
 ALERT DiskOutOfInodes
@@ -31,8 +33,9 @@ ALERT DiskOutOfInodes
   (app)) < 0.2
   FOR 1m
   LABELS {severity="warning"}
-    summary="Disk of {{ $labels.app }} inodes"
-    ANNOTATIONS {description="{{ $labels.app }} is below 20% free inodes for more than 1 minutes.", 
+  ANNOTATIONS {
+    summary="Disk of {{ $labels.app }} inodes",
+    description="{{ $labels.app }} is below 20% free inodes for more than 1 minutes.", 
   }
 
 ALERT DiskOutOfInodes
@@ -41,8 +44,9 @@ ALERT DiskOutOfInodes
   (app)) < 0.1
   FOR 1m
   LABELS {severity="critical"}
-    summary="Disk of {{ $labels.app }} inodes"
-    ANNOTATIONS {description="{{ $labels.app }} is below 10% free inodes for more than 1 minutes.", 
+  ANNOTATIONS {
+    summary="Disk of {{ $labels.app }} inodes",
+    description="{{ $labels.app }} is below 10% free inodes for more than 1 minutes.", 
   }
 
 ALERT BackupMissing
@@ -50,8 +54,9 @@ ALERT BackupMissing
   (app)) > (60 * 60 * 24 * 2)
   FOR 1m
   LABELS {severity="warning"}
-    summary="Backup of {{ $labels.app }} missing"
-    ANNOTATIONS {description="{{ $labels.app }} has no verliernix backup for more than 2 days", 
+  ANNOTATIONS {
+    summary="Backup of {{ $labels.app }} missing",
+    description="{{ $labels.app }} has no verliernix backup for more than 2 days", 
   }
 
 ALERT BackupMissing
@@ -59,6 +64,7 @@ ALERT BackupMissing
   (app)) > (60 * 60 * 24 * 3)
   FOR 1m
   LABELS {severity="critical"}
-    summary="Backup of {{ $labels.app }} missing"
-    ANNOTATIONS {description="{{ $labels.app }} has no verliernix backup for more than 3 days", 
+  ANNOTATIONS {
+    summary="Backup of {{ $labels.app }} missing",
+    description="{{ $labels.app }} has no verliernix backup for more than 3 days", 
   }
