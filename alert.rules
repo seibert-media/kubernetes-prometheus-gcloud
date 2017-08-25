@@ -7,3 +7,58 @@ ALERT InstanceDown
     summary = "Instance {{ $labels.instance }} down",
     description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.",
   }
+
+ALERT DiskOutOfSpace
+  IF (max(diskstatus_bytesfree / diskstatus_bytestotal) 
+  BY (app)) < 0.2
+  FOR 1m
+  LABELS {severity="warning"}
+    summary="Disk of {{ $labels.app }} space"
+    ANNOTATIONS {description="{{ $labels.app }} is below 20% free space for more than 1 minutes.", 
+  }
+
+ALERT DiskOutOfSpace
+  IF (max(diskstatus_bytesfree / diskstatus_bytestotal) BY 
+  (app)) < 0.1
+  FOR 1m
+  LABELS {severity="critical"}
+    summary="Disk of {{ $labels.app }} space"
+    ANNOTATIONS {description="{{ $labels.app }} is below 10% free space for more than 1 minutes.", 
+  }
+
+ALERT DiskOutOfInodes
+  IF (max(diskstatus_inodesfree / diskstatus_inodestotal) BY 
+  (app)) < 0.2
+  FOR 1m
+  LABELS {severity="warning"}
+    summary="Disk of {{ $labels.app }} inodes"
+    ANNOTATIONS {description="{{ $labels.app }} is below 20% free inodes for more than 1 minutes.", 
+  }
+
+ALERT DiskOutOfInodes
+  IF (max(diskstatus_inodesfree / diskstatus_inodestotal) 
+  BY 
+  (app)) < 0.1
+  FOR 1m
+  LABELS {severity="critical"}
+    summary="Disk of {{ $labels.app }} inodes"
+    ANNOTATIONS {description="{{ $labels.app }} is below 10% free inodes for more than 1 minutes.", 
+  }
+
+ALERT BackupMissing
+  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) BY 
+  (app)) > (60 * 60 * 24 * 2)
+  FOR 1m
+  LABELS {severity="warning"}
+    summary="Backup of {{ $labels.app }} missing"
+    ANNOTATIONS {description="{{ $labels.app }} has no verliernix backup for more than 2 days", 
+  }
+
+ALERT BackupMissing
+  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) BY 
+  (app)) > (60 * 60 * 24 * 3)
+  FOR 1m
+  LABELS {severity="critical"}
+    summary="Backup of {{ $labels.app }} missing"
+    ANNOTATIONS {description="{{ $labels.app }} has no verliernix backup for more than 3 days", 
+  }
