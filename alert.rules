@@ -40,8 +40,7 @@ ALERT DiskOutOfInodes
 
 ALERT DiskOutOfInodes
   IF (max(diskstatus_inodesfree / diskstatus_inodestotal) 
-  BY 
-  (app)) < 0.1
+  BY (app)) < 0.1
   FOR 1m
   LABELS {severity="critical"}
   ANNOTATIONS {
