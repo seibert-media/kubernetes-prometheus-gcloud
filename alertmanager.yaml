@@ -49,4 +49,4 @@ inhibit_rules:
 receivers:
 - name: 'team-inf'
   email_configs:
-  - to: 'bborbe@seibert-media.net'
+  - to: 'infinity@seibert-media.net'
