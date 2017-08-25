@@ -9,8 +9,7 @@ ALERT InstanceDown
   }
 
 ALERT DiskOutOfSpace
-  IF (max(diskstatus_bytesfree / diskstatus_bytestotal) 
-  BY (app)) < 0.2
+  IF (max(diskstatus_bytesfree / diskstatus_bytestotal) BY (app)) < 0.2
   FOR 1m
   LABELS {severity="warning"}
   ANNOTATIONS {
@@ -19,8 +18,7 @@ ALERT DiskOutOfSpace
   }
 
 ALERT DiskOutOfSpace
-  IF (max(diskstatus_bytesfree / diskstatus_bytestotal)
-  BY (app)) < 0.1
+  IF (max(diskstatus_bytesfree / diskstatus_bytestotal)BY (app)) < 0.1
   FOR 1m
   LABELS {severity="critical"}
   ANNOTATIONS {
@@ -29,8 +27,7 @@ ALERT DiskOutOfSpace
   }
 
 ALERT DiskOutOfInodes
-  IF (max(diskstatus_inodesfree / diskstatus_inodestotal)
-  BY (app)) < 0.2
+  IF (max(diskstatus_inodesfree / diskstatus_inodestotal)BY (app)) < 0.2
   FOR 1m
   LABELS {severity="warning"}
   ANNOTATIONS {
@@ -39,8 +36,7 @@ ALERT DiskOutOfInodes
   }
 
 ALERT DiskOutOfInodes
-  IF (max(diskstatus_inodesfree / diskstatus_inodestotal) 
-  BY (app)) < 0.1
+  IF (max(diskstatus_inodesfree / diskstatus_inodestotal) BY (app)) < 0.1
   FOR 1m
   LABELS {severity="critical"}
   ANNOTATIONS {
@@ -49,8 +45,7 @@ ALERT DiskOutOfInodes
   }
 
 ALERT BackupMissing
-  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))
-  BY (app)) > (60 * 60 * 24 * 2)
+  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))BY (app)) > (60 * 60 * 24 * 2)
   FOR 1m
   LABELS {severity="warning"}
   ANNOTATIONS {
@@ -59,8 +54,7 @@ ALERT BackupMissing
   }
 
 ALERT BackupMissing
-  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))
-  BY (app)) > (60 * 60 * 24 * 3)
+  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))BY (app)) > (60 * 60 * 24 * 3)
   FOR 1m
   LABELS {severity="critical"}
   ANNOTATIONS {
