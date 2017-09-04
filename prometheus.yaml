@@ -224,6 +224,8 @@ scrape_configs:
   - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probehttps]
     action: keep
     regex: true
+  - source_labels: [__address__]
+    target_label: orig_address
   - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_target]
     target_label: __param_target
   - source_labels: [__meta_kubernetes_service_name]
