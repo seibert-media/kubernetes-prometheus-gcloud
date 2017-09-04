@@ -211,7 +211,7 @@ scrape_configs:
 #
 # * `prometheus.io/probehttp`: Only probe services that have a value of `true`
 # * `prometheus.io/fqdn`: The external address to check
-- job_name: 'kubernetes-services-http'
+- job_name: 'kubernetes-services-https'
 
   metrics_path: /probe
   params:
