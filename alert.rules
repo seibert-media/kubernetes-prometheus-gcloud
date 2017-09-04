@@ -61,3 +61,13 @@ ALERT BackupMissing
     summary="Backup of {{ $labels.app }} missing",
     description="{{ $labels.app }} has no verliernix backup for more than 3 days", 
   }
+
+# Alert for any failed HTTP/s Status Codes that that arise for >5 minutes.
+ALERT HttpError
+  IF probe_success == 0
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "Instance {{ $labels.instance }} down",
+    description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.",
+  }
