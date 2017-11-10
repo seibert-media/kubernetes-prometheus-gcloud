@@ -19,7 +19,7 @@ route:
   routes:
   - receiver: 'team-inf'
     group_by: ['alertname', 'cluster', 'service']
-    match:
+    match_re:
       secerity: warning|critical
 
 # Inhibition rules allow to mute a set of alerts given that another alert is
