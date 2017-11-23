@@ -9,59 +9,113 @@ ALERT InstanceDown
   }
 
 
+# Alert disk space below 20% free
 ALERT DiskOutOfSpace
-  IF (max(diskstatus_bytesfree / diskstatus_bytestotal) BY (app)) < 0.2
-  FOR 1m
-  LABELS {severity="warning"}
-  ANNOTATIONS {
-    summary="Disk of {{ $labels.app }} space",
-    description="{{ $labels.app }} is below 20% free space for more than 1 minutes.", 
-  }
+	IF (max(diskstatus_bytesfree / diskstatus_bytestotal) by (app)) < 0.2
+	FOR 1m
+	LABELS {
+		severity = "warning",
+	}
+	ANNOTATIONS {
+		summary = "Disk of {{ $labels.app }} space",
+		description = "{{ $labels.app }} is below 20% free space for more than 1 minutes.",
+	}
 
+# Alert disk space below 10% free
 ALERT DiskOutOfSpace
-  IF (max(diskstatus_bytesfree / diskstatus_bytestotal)BY (app)) < 0.1
-  FOR 1m
-  LABELS {severity="critical"}
-  ANNOTATIONS {
-    summary="Disk of {{ $labels.app }} space",
-    description="{{ $labels.app }} is below 10% free space for more than 1 minutes.", 
-  }
+	IF (max(diskstatus_bytesfree / diskstatus_bytestotal) by (app)) < 0.1
+	FOR 1m
+	LABELS {
+		severity = "critical",
+	}
+	ANNOTATIONS {
+		summary = "Disk of {{ $labels.app }} space",
+		description = "{{ $labels.app }} is below 10% free space for more than 1 minutes.",
+	}
 
+# Alert disk space below 20% free
 ALERT DiskOutOfInodes
-  IF (max(diskstatus_inodesfree / diskstatus_inodestotal)BY (app)) < 0.2
-  FOR 1m
-  LABELS {severity="warning"}
-  ANNOTATIONS {
-    summary="Disk of {{ $labels.app }} inodes",
-    description="{{ $labels.app }} is below 20% free inodes for more than 1 minutes.", 
-  }
+	IF (max(diskstatus_inodesfree / diskstatus_inodestotal) by (app)) < 0.2
+	FOR 1m
+	LABELS {
+		severity = "warning",
+	}
+	ANNOTATIONS {
+		summary = "Disk of {{ $labels.app }} inodes",
+		description = "{{ $labels.app }} is below 20% free inodes for more than 1 minutes.",
+	}
 
+# Alert disk space below 10% free
 ALERT DiskOutOfInodes
-  IF (max(diskstatus_inodesfree / diskstatus_inodestotal) BY (app)) < 0.1
-  FOR 1m
-  LABELS {severity="critical"}
-  ANNOTATIONS {
-    summary="Disk of {{ $labels.app }} inodes",
-    description="{{ $labels.app }} is below 10% free inodes for more than 1 minutes.", 
-  }
+	IF (max(diskstatus_inodesfree / diskstatus_inodestotal) by (app)) < 0.1
+	FOR 1m
+	LABELS {
+		severity = "critical",
+	}
+	ANNOTATIONS {
+		summary = "Disk of {{ $labels.app }} inodes",
+		description = "{{ $labels.app }} is below 10% free inodes for more than 1 minutes.",
+	}
 
+# Alert Backup is missing for more than 2 days
 ALERT BackupMissing
-  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))BY (app)) > (60 * 60 * 24 * 2)
-  FOR 1m
-  LABELS {severity="warning"}
-  ANNOTATIONS {
-    summary="Backup of {{ $labels.app }} missing",
-    description="{{ $labels.app }} has no verliernix backup for more than 2 days", 
-  }
+	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) by (app)) / (60 * 60) > (24 * 2)
+	FOR 1m
+	LABELS {
+		severity = "warning",
+	}
+	ANNOTATIONS {
+		summary = "Backup of {{ $labels.app }} missing",
+		description = "{{ $labels.app }} has no verliernix backup for more than 2 days",
+	}
 
+# Alert Backup is missing for more than 3 days
 ALERT BackupMissing
-  IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d]))BY (app)) > (60 * 60 * 24 * 3)
-  FOR 1m
-  LABELS {severity="critical"}
-  ANNOTATIONS {
-    summary="Backup of {{ $labels.app }} missing",
-    description="{{ $labels.app }} has no verliernix backup for more than 3 days", 
-  }
+	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) by (app)) / (60 * 60) > (24 * 3)
+	FOR 1m
+	LABELS {
+		severity = "critical",
+	}
+	ANNOTATIONS {
+		summary = "Backup of {{ $labels.app }} missing",
+		description = "{{ $labels.app }} has no verliernix backup for more than 3 days",
+	}
+
+# Alert NFS Backup is missing for more than 2 days
+ALERT BackupNfsMissing
+	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])) by (app)) / (60 * 60) > (24 * 2)
+	FOR 1m
+	LABELS {
+		severity = "warning",
+	}
+	ANNOTATIONS {
+		summary = "Backup of {{ $labels.app }} missing",
+		description = "{{ $labels.app }} has no verliernix backup for more than 2 days",
+	}
+
+# Alert NFS Backup is missing for more than 3 days
+ALERT BackupNfsMissing
+	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])) by (app)) / (60 * 60) > (24 * 3)
+	FOR 1m
+	LABELS {
+		severity = "critical",
+	}
+	ANNOTATIONS {
+		summary = "Backup of {{ $labels.app }} missing",
+		description = "{{ $labels.app }} has no verliernix backup for more than 3 days",
+	}
+
+# Alert No available Backup data
+ALERT BackupNfsMissing
+	IF absent(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"})
+	FOR 1m
+	LABELS {
+		severity = "critical",
+	}
+	ANNOTATIONS {
+		summary = "Backup of {{ $labels.app }} missing",
+		description = "{{ $labels.app }} has no available verliernix backup data",
+	}
 
 # Alert for any failed HTTP/s Status Codes that that arise for >5 minutes.
 ALERT HttpError
