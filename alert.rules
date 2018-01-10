@@ -136,3 +136,24 @@ ALERT HttpError
     summary = "Instance {{ $labels.instance }} down",
     description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.",
   }
+
+# Alert if >1 Jenkins Job is stuck for more than 10m.
+ALERT JenkinsJobStuck
+  IF avg_over_time(jenkins_stuckBuilds[10m]) > 1
+  FOR 5s
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "Jenkins has stuck builds",
+    description = "A job has been stuck for more than 10 minutes.",
+  }
+
+# Alert if >1 Jenkins Job is stuck for more than 10m.
+ALERT JenkinsQueueStuck
+  IF sort(sum(jenkins_queueLength) by (id)) > 5
+  FOR 10m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "Jenkins Queue Full",
+    description = "Jenkins Queue has been full for more than 10 minutes.",
+  }
+
