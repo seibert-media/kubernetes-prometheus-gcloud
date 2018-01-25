@@ -157,3 +157,12 @@ ALERT JenkinsQueueStuck
     description = "Jenkins Queue has been full for more than 10 minutes.",
   }
 
+# Alert if a Jenkins master branch is red for more than 5min.
+ALERT JenkinsMasterRed
+  IF max by(name)(jenkins_job_color{branch="master"}) > 0
+  FOR 5m
+  LABELS { severity = "critical" }
+  ANNOTATIONS {
+    summary = "Jenkins Master Red",
+    description = "The master of Jenkins Job {{ $labels.name }} has been red for more than 5min.",
+  }
