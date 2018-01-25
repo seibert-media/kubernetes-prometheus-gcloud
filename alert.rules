@@ -139,7 +139,7 @@ ALERT HttpError
 
 # Alert if >1 Jenkins Job is stuck for more than 10m.
 ALERT JenkinsJobStuck
-  IF avg_over_time(jenkins_stuckBuilds[10m]) > 1
+  IF min_over_time(jenkins_stuckBuilds[10m]) > 1
   FOR 5s
   LABELS { severity = "critical" }
   ANNOTATIONS {
@@ -149,7 +149,7 @@ ALERT JenkinsJobStuck
 
 # Alert if >1 Jenkins Job is stuck for more than 10m.
 ALERT JenkinsQueueStuck
-  IF sort(sum(jenkins_queueLength) by (id)) > 5
+  IF min_over_time(jenkins_queueLength[10m]) > 5
   FOR 10m
   LABELS { severity = "critical" }
   ANNOTATIONS {
