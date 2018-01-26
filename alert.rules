@@ -159,8 +159,8 @@ ALERT JenkinsQueueStuck
 
 # Alert if a Jenkins master branch is red for more than 5min.
 ALERT JenkinsMasterRed
-  IF max by(name)(jenkins_job_color{branch="master"}) > 0
-  FOR 5m
+  IF max by(name)(jenkins_job_color{branch="master", name!~"Example.*"})
+  FOR 6h
   LABELS { severity = "critical" }
   ANNOTATIONS {
     summary = "Jenkins Master Red",
