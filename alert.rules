@@ -1,13 +1,12 @@
 # Alert for any instance that is unreachable for >5 seconds.
 ALERT InstanceDown
-  IF up == 0
-  FOR 5s
-  LABELS { severity = "info" }
-  ANNOTATIONS {
-    summary = "Instance {{ $labels.instance }} down",
-    description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.",
-  }
-
+	IF up == 0
+	FOR 5s
+	LABELS { severity = "info" }
+	ANNOTATIONS {
+	summary = "Instance {{ $labels.instance }} down",
+	description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.",
+	}
 
 # Alert disk space below 20% free
 ALERT DiskOutOfSpace
@@ -60,7 +59,7 @@ ALERT DiskOutOfInodes
 # Alert Backup is missing for more than 2 days
 ALERT BackupMissing
 	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) by (app)) / (60 * 60) > (24 * 2)
-	FOR 1m
+	FOR 1h
 	LABELS {
 		severity = "warning",
 	}
@@ -72,7 +71,7 @@ ALERT BackupMissing
 # Alert Backup is missing for more than 3 days
 ALERT BackupMissing
 	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup[1d])) by (app)) / (60 * 60) > (24 * 3)
-	FOR 1m
+	FOR 1h
 	LABELS {
 		severity = "critical",
 	}
@@ -84,7 +83,7 @@ ALERT BackupMissing
 # Alert NFS Backup is missing for more than 2 days
 ALERT BackupNfsMissing
 	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])) by (app)) / (60 * 60) > (24 * 2)
-	FOR 1m
+	FOR 1h
 	LABELS {
 		severity = "warning",
 	}
@@ -96,7 +95,7 @@ ALERT BackupNfsMissing
 # Alert NFS Backup is missing for more than 3 days
 ALERT BackupNfsMissing
 	IF (time() - max(max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])) by (app)) / (60 * 60) > (24 * 3)
-	FOR 1m
+	FOR 1h
 	LABELS {
 		severity = "critical",
 	}
@@ -108,7 +107,7 @@ ALERT BackupNfsMissing
 # Alert No available Backup data
 ALERT BackupNfsMissing
 	IF absent(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"})
-	FOR 1m
+	FOR 1h
 	LABELS {
 		severity = "critical",
 	}
@@ -119,50 +118,50 @@ ALERT BackupNfsMissing
 
 # Alert for any failed HTTP/s Status Codes that that arise for >5 minutes.
 ALERT HttpError
-  IF probe_success == 0
-  FOR 5m
-  LABELS { severity = "critical" }
-  ANNOTATIONS {
-    summary = "Instance {{ $labels.instance }} down",
-    description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.",
-  }
+	IF probe_success == 0
+	FOR 5m
+	LABELS { severity = "critical" }
+	ANNOTATIONS {
+		summary = "Instance {{ $labels.instance }} down",
+		description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.",
+	}
 
 # Alert for any failed HTTP/s Status Codes that that arise for >5 seconds.
 ALERT HttpError
-  IF probe_success == 0
-  FOR 5s
-  LABELS { severity = "info" }
-  ANNOTATIONS {
-    summary = "Instance {{ $labels.instance }} down",
-    description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.",
-  }
+	IF probe_success == 0
+	FOR 5s
+	LABELS { severity = "info" }
+	ANNOTATIONS {
+		summary = "Instance {{ $labels.instance }} down",
+		description = "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.",
+	}
 
 # Alert if >1 Jenkins Job is stuck for more than 10m.
 ALERT JenkinsJobStuck
-  IF min_over_time(jenkins_stuckBuilds[10m]) > 1
-  FOR 5s
-  LABELS { severity = "critical" }
-  ANNOTATIONS {
-    summary = "Jenkins has stuck builds",
-    description = "A job has been stuck for more than 10 minutes.",
-  }
+	IF min_over_time(jenkins_stuckBuilds[10m]) > 1
+	FOR 5s
+	LABELS { severity = "critical" }
+	ANNOTATIONS {
+		summary = "Jenkins has stuck builds",
+		description = "A job has been stuck for more than 10 minutes.",
+	}
 
 # Alert if >1 Jenkins Job is stuck for more than 10m.
 ALERT JenkinsQueueStuck
-  IF min_over_time(jenkins_queueLength[10m]) > 5
-  FOR 10m
-  LABELS { severity = "critical" }
-  ANNOTATIONS {
-    summary = "Jenkins Queue Full",
-    description = "Jenkins Queue has been full for more than 10 minutes.",
-  }
+	IF min_over_time(jenkins_queueLength[10m]) > 5
+	FOR 10m
+	LABELS { severity = "critical" }
+	ANNOTATIONS {
+		summary = "Jenkins Queue Full",
+		description = "Jenkins Queue has been full for more than 10 minutes.",
+	}
 
 # Alert if a Jenkins master branch is red for more than 5min.
 ALERT JenkinsMasterRed
-  IF max by(name)(jenkins_job_color{branch="master", name!~"Example.*"}) > 0
-  FOR 6h
-  LABELS { severity = "critical" }
-  ANNOTATIONS {
-    summary = "Jenkins Master Red",
-    description = "The master of Jenkins Job {{ $labels.name }} has been red for more than 5min.",
-  }
+	IF max by(name)(jenkins_job_color{branch="master", name!~"Example.*"}) > 0
+	FOR 6h
+	LABELS { severity = "critical" }
+	ANNOTATIONS {
+		summary = "Jenkins Master Red",
+		description = "The master of Jenkins Job {{ $labels.name }} has been red for more than 5min.",
+	}
