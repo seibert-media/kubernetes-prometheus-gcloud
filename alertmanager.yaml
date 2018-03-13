@@ -1,5 +1,7 @@
 global:
-  resolve_timeout: 1m
+  # ResolveTimeout is the time after which an alert is declared resolved
+  # if it has not been updated.
+  resolve_timeout: 5m
   smtp_smarthost: 'int.postfix.smedia.fra-1.smhss.de:25'
   smtp_from: 'alertmanager@seibert-media.net'
   smtp_require_tls: false
@@ -10,9 +12,17 @@ templates:
 
 route:
   receiver: 'default'
+  # How long to initially wait to send a notification for a group
+  # of alerts. Allows to wait for an inhibiting alert to arrive or collect
+  # more initial alerts for the same group. (Usually ~0s to few minutes.)
   group_wait: 30s
+  # How long to wait before sending a notification about new alerts that
+  # are added to a group of alerts for which an initial notification has
+  # already been sent. (Usually ~5m or more.)
   group_interval: 5m
-  repeat_interval: 3h
+  # How long to wait before sending a notification again if it has already
+  # been sent successfully for an alert. (Usually ~3h or more).
+  repeat_interval: 6h
   group_by: ['alertname', 'cluster', 'service']
   # All alerts that do not match the following child routes
   # will remain at the root node and be dispatched to 'default-receiver'.
