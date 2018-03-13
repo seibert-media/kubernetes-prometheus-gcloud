@@ -38,5 +38,5 @@ inhibit_rules:
 receivers:
 - name: 'team-inf'
   email_configs:
-  - to: 'infinity@seibert-media.net'
+  - to: 'infinity-monitoring@seibert-media.net'
 - name: 'default'
