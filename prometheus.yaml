@@ -13,10 +13,18 @@ global:
   external_labels:
     region: 'sm'
 
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - prometheus-alertmanager:9093
+    scheme: http
+    timeout: 10s
+
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
 rule_files:
-- 'alert.rules'
+- 'alert.rules.yaml'
 
 # A scrape configuration for running Prometheus on a Kubernetes cluster.
 # This uses separate scrape configs for cluster components (i.e. API server, node)
