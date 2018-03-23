@@ -1,0 +1,27 @@
+alertmanager:
+  interval: 60s
+  servers:
+    - name: main
+      uri: http://prometheus-alertmanager:9093
+      timeout: 10s
+      proxy: true
+annotations:
+  default:
+    hidden: false
+  hidden:
+    - help
+  visible: []
+debug: false
+listen:
+  address: "0.0.0.0"
+  port: 9093
+  prefix: /
+log:
+  config: false
+  level: info
+jira:
+  - regex: INF-[0-9]+
+    uri: https://jira.apps.seibert-media.net
+receivers:
+  keep: []
+  strip: []
