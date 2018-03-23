@@ -1,3 +1,4 @@
+# DEPRECATED -- No longer used after the Prometheus 2.x update!
 # Alert for any instance that is unreachable for >5 seconds.
 ALERT InstanceDown
 	IF up == 0

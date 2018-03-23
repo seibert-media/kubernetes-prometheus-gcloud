@@ -1,0 +1,131 @@
+groups:
+- name: alert.rules
+  rules:
+  - alert: InstanceDown
+    expr: up == 0
+    for: 5s
+    labels:
+      severity: info
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 5 seconds.'
+      summary: Instance {{ $labels.instance }} down
+  - alert: DiskOutOfSpace
+    expr: (max by(app) (diskstatus_bytesfree / diskstatus_bytestotal)) < 0.2
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.app }} is below 20% free space for more than 1 minutes.'
+      summary: Disk of {{ $labels.app }} space
+  - alert: DiskOutOfSpace
+    expr: (max by(app) (diskstatus_bytesfree / diskstatus_bytestotal)) < 0.1
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.app }} is below 10% free space for more than 1 minutes.'
+      summary: Disk of {{ $labels.app }} space
+  - alert: DiskOutOfInodes
+    expr: (max by(app) (diskstatus_inodesfree / diskstatus_inodestotal)) < 0.2
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.app }} is below 20% free inodes for more than 1 minutes.'
+      summary: Disk of {{ $labels.app }} inodes
+  - alert: DiskOutOfInodes
+    expr: (max by(app) (diskstatus_inodesfree / diskstatus_inodestotal)) < 0.1
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.app }} is below 10% free inodes for more than 1 minutes.'
+      summary: Disk of {{ $labels.app }} inodes
+  - alert: BackupMissing
+    expr: (time() - max by(app) (max_over_time(backup_verliernix_last_rsync_backup[1d])))
+      / (60 * 60) > (24 * 2)
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.app }} has no verliernix backup for more than 2 days'
+      summary: Backup of {{ $labels.app }} missing
+  - alert: BackupMissing
+    expr: (time() - max by(app) (max_over_time(backup_verliernix_last_rsync_backup[1d])))
+      / (60 * 60) > (24 * 3)
+    for: 1h
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.app }} has no verliernix backup for more than 3 days'
+      summary: Backup of {{ $labels.app }} missing
+  - alert: BackupNfsMissing
+    expr: (time() - max by(app) (max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])))
+      / (60 * 60) > (24 * 2)
+    for: 1h
+    labels:
+      severity: warning
+    annotations:
+      description: '{{ $labels.app }} has no verliernix backup for more than 2 days'
+      summary: Backup of {{ $labels.app }} missing
+  - alert: BackupNfsMissing
+    expr: (time() - max by(app) (max_over_time(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"}[1d])))
+      / (60 * 60) > (24 * 3)
+    for: 1h
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.app }} has no verliernix backup for more than 3 days'
+      summary: Backup of {{ $labels.app }} missing
+  - alert: BackupNfsMissing
+    expr: absent(backup_verliernix_last_rsync_backup{app="nfs-metrics-verliernix"})
+    for: 1h
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.app }} has no available verliernix backup data'
+      summary: Backup of {{ $labels.app }} missing
+  - alert: HttpError
+    expr: probe_success == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 5 minutes.'
+      summary: Instance {{ $labels.instance }} down
+  - alert: HttpError
+    expr: probe_success == 0
+    for: 5s
+    labels:
+      severity: info
+    annotations:
+      description: '{{ $labels.instance }} of job {{ $labels.job }} has been down
+        for more than 5 seconds.'
+      summary: Instance {{ $labels.instance }} down
+  - alert: JenkinsJobStuck
+    expr: min_over_time(jenkins_stuckBuilds[2h]) > 1
+    for: 5s
+    labels:
+      severity: critical
+    annotations:
+      description: A job has been stuck for more than 10 minutes.
+      summary: Jenkins has stuck builds
+  - alert: JenkinsQueueStuck
+    expr: min_over_time(jenkins_queueLength[2h]) > 5
+    for: 5s
+    labels:
+      severity: critical
+    annotations:
+      description: Jenkins Queue has been full for more than 10 minutes.
+      summary: Jenkins Queue Full
+  - alert: JenkinsMasterRed
+    expr: max by(name) (jenkins_job_color{branch="master",name!~"Example.*"}) > 0
+    for: 6h
+    labels:
+      severity: critical
+    annotations:
+      description: The master of Jenkins Job {{ $labels.name }} has been red for more
+        than 5min.
+      summary: Jenkins Master Red
